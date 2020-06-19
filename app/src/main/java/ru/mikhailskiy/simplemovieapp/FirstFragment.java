@@ -41,10 +41,7 @@ public class FirstFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         recyclerView = view.findViewById(R.id.movies);
-
         getMovies();
-
-
     }
 
     void getMovies() {
@@ -54,7 +51,12 @@ public class FirstFragment extends Fragment {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
                         Log.d("TEST", response.body().toString());
-                        MoviesAdapter adapter = new MoviesAdapter(response.body().results);
+                        MoviesAdapter adapter = new MoviesAdapter(response.body().results, new MoviesAdapter.ItemClickListener() {
+                            @Override
+                            public void onItemClick(View view, int position) {
+                                moveToDetails();
+                            }
+                        });
                         // Attach the adapter to the recyclerview to populate items
                         recyclerView.setAdapter(adapter);
                         // Set layout manager to position the items
@@ -66,13 +68,13 @@ public class FirstFragment extends Fragment {
                                 .build();
 
                         List<MovieDb> dbMovies = new ArrayList<>();
-                        dbMovies.add(new MovieDb(0, "Test", "TestDesc"));
-                        db.movieDao().insertAll(dbMovies);
 
+                        Movie firstMovie = response.body().results.get(1);
+                        dbMovies.add(new MovieDb(0, firstMovie.title, firstMovie.overview));
+                        db.movieDao().insertAll(dbMovies);
 
                         // Прорвеим что успешно сохранили данные
                         Log.d("TEST_DB", db.movieDao().getAll().get(0).movieName);
-
                     }
 
                     @Override
@@ -83,11 +85,12 @@ public class FirstFragment extends Fragment {
         );
     }
 
+
     void moveToDetails() {
         NavHostFragment.findNavController(FirstFragment.this)
                 .navigate(R.id.action_FirstFragment_to_SecondFragment);
     }
 
 
-    String apiKey = "0bd95c30f721d1e94381142dc1ce3d50";
+    String apiKey = "Вставьте ваш API KEY из The Movie Database";
 }

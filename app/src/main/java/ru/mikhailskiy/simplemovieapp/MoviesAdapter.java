@@ -13,10 +13,13 @@ import java.util.List;
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewHolder> {
 
     private List<Movie> movieList;
+    private ItemClickListener mClickListener;
 
-    public MoviesAdapter(List<Movie> movieList) {
+    public MoviesAdapter(List<Movie> movieList, ItemClickListener mClickListener) {
         this.movieList = movieList;
+        this.mClickListener = mClickListener;
     }
+
 
     @Override
     public MovieViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -45,7 +48,12 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 
             movieDescription = itemView.findViewById(R.id.description);
             rating = itemView.findViewById(R.id.rating);
-            itemView.setOnClickListener(this);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mClickListener.onItemClick(v, getAdapterPosition());
+                }
+            });
         }
 
         @Override
@@ -71,5 +79,10 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
     @Override
     public int getItemCount() {
         return movieList.size();
+    }
+
+    // parent activity will implement this method to respond to click events
+    public interface ItemClickListener {
+        void onItemClick(View view, int position);
     }
 }
