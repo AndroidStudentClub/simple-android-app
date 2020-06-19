@@ -10,6 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -18,7 +20,7 @@ import retrofit2.Response;
 public class FirstFragment extends Fragment {
 
     MovieApiInterface apiInterface;
-    TextView textView;
+    RecyclerView recyclerView;
 
     @Override
     public View onCreateView(
@@ -31,15 +33,10 @@ public class FirstFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        recyclerView = view.findViewById(R.id.movies);
 
-        textView = view.findViewById(R.id.textview_first);
+        getMovies();
 
-        view.findViewById(R.id.button_first).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getMovies();
-            }
-        });
 
     }
 
@@ -50,6 +47,11 @@ public class FirstFragment extends Fragment {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
                         Log.d("TEST", response.body().toString());
+                        MoviesAdapter adapter = new MoviesAdapter(response.body().results);
+                        // Attach the adapter to the recyclerview to populate items
+                        recyclerView.setAdapter(adapter);
+                        // Set layout manager to position the items
+                        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
                     }
 
                     @Override
@@ -58,7 +60,6 @@ public class FirstFragment extends Fragment {
                     }
                 }
         );
-
     }
 
     void moveToDetails() {
@@ -67,5 +68,5 @@ public class FirstFragment extends Fragment {
     }
 
 
-    String apiKey = "";
+    String apiKey = "0bd95c30f721d1e94381142dc1ce3d50";
 }
