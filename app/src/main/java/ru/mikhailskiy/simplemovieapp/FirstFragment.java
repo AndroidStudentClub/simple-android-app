@@ -12,10 +12,17 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import ru.mikhailskiy.simplemovieapp.database.MovieDao;
+import ru.mikhailskiy.simplemovieapp.database.MovieDatabase;
+import ru.mikhailskiy.simplemovieapp.database.MovieDb;
 
 public class FirstFragment extends Fragment {
 
@@ -52,6 +59,20 @@ public class FirstFragment extends Fragment {
                         recyclerView.setAdapter(adapter);
                         // Set layout manager to position the items
                         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
+
+                        MovieDatabase db = Room.databaseBuilder(recyclerView.getContext(),
+                                MovieDatabase.class, "database-name")
+                                .allowMainThreadQueries()
+                                .build();
+
+                        List<MovieDb> dbMovies = new ArrayList<>();
+                        dbMovies.add(new MovieDb(0, "Test", "TestDesc"));
+                        db.movieDao().insertAll(dbMovies);
+
+
+                        // Прорвеим что успешно сохранили данные
+                        Log.d("TEST_DB", db.movieDao().getAll().get(0).movieName);
+
                     }
 
                     @Override
